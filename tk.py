@@ -60,6 +60,14 @@ class SerialDevice():
         print("incomming data", incomming_int, type(incomming_int))
         self.received_msg = incomming_int
 
+    def write_str(self, str):
+        print("write_str", str)
+        self.serial.write(str)
+
+    def read_str_msg(self):
+        incomming_all = self.serial.read_all()
+        print("war incomming_all ", incomming_all)
+
 
 class Tk():
     def __init__(self):
@@ -127,6 +135,13 @@ class Tk():
     def _open_webpage(self, event):
         webbrowser.open("https://www.makuake.com/project/narrativelab")
 
+    def _write_str_msg(self, event):
+        msg = b"3,mouse;6,click"
+        self.arduino.write_str(msg)
+
+    def _read_str_msg(self, event):
+        self.arduino.read_str_msg()
+
     def page(self):
         # デバイス探索結果描画用テキストボックス
         self.txt_sd = tk.Text(width=40, height=2)
@@ -139,7 +154,7 @@ class Tk():
         # COM用エントリー
         self.entry_comx_var = tk.StringVar()
         self.entry_comx = tk.Entry(textvariable=self.entry_comx_var)
-        self.entry_comx.insert(tk.END, "COMx")
+        self.entry_comx.insert(tk.END, "COM3")
         # ボーレート用エントリー
         self.entry_baudrate_var = tk.StringVar()
         self.entry_baudrate = tk.Entry(textvariable=self.entry_baudrate_var)
@@ -185,6 +200,12 @@ class Tk():
         # ウェブ
         self.btn_web = tk.Button(text="web")
         self.btn_web.bind(self.click, self._open_webpage)
+        # 文字列送信
+        self.btn_str = tk.Button(text="str")
+        self.btn_str.bind(self.click, self._write_str_msg)
+        # 文字列受信
+        self.btn_read_str = tk.Button(text="read str")
+        self.btn_read_str.bind(self.click, self._read_str_msg)
 
         # 表示順序
         self.btn_sd.pack()
@@ -204,6 +225,8 @@ class Tk():
         self.btn_send_msg.pack()
         self.btn_read_msg.pack()
         self.btn_web.pack()
+        self.btn_str.pack()
+        self.btn_read_str.pack()
 
     def show(self):
         self.root.mainloop()
