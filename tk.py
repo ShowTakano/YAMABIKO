@@ -1,4 +1,5 @@
 import tkinter as tk
+import time
 
 # pip install pyserial
 import serial
@@ -136,8 +137,35 @@ class Tk():
         webbrowser.open("https://www.makuake.com/project/narrativelab")
 
     def _write_str_msg(self, event):
-        msg = b"3,mouse;6,click"
-        self.arduino.write_str(msg)
+        # mouse-click 3 interval :  mouse-click,3,interval;
+        # mouse-move 3 interval :   mouse-move,3,interval;
+        # key-down 3 once :         key-down,3,once;
+        # key-up 3 once :           key-up,3,once;
+        # key-win 3 interval :      key-win,3,interval;
+        # key-enter 3 once :        key-enter,3,once; 
+        # type:str" 3 once :        type:str,3,once; ()
+        # cmd 3 once :              cmd,3,once;  (win cmd enter)
+        # log-out 3 once :          log-out,3,once;
+        
+        # total end is end; (hoge;hoge;hoge;end;)
+
+        #msg = b"mouse-click,3,interval;mouse-move,1,once;type:hoge,10,interval;type:hoge2,4,interval;end;"
+        #msg = b"mouse-click,10,interval;mouse-move,9,once;type:hoge,11,interval;end;"
+        #self.arduino.write_str(msg)
+
+        msgs = [
+            b"mouse-click,3,interval;", 
+            b"mouse-move,5,once;", 
+            b"type:hoge7,7,interval;", 
+            b"type:hoge11,11,interval;", 
+            b"mouse-click,13,interval;", 
+            b"mouse-move,17,once;", 
+            b"type:hoge19,19,interval;", 
+            b"type:this str is 23.,23,interval;", 
+            b"end;"]
+        for msg in msgs:
+            self.arduino.write_str(msg)
+            time.sleep(0.5)
 
     def _read_str_msg(self, event):
         self.arduino.read_str_msg()
