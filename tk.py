@@ -234,6 +234,20 @@ class Tk():
         # 文字列受信
         self.btn_read_str = tk.Button(text="read str")
         self.btn_read_str.bind(self.click, self._read_str_msg)
+        # オプションメニュー
+        cmd_list = [
+            "None", 
+            "Mouce click", 
+            "Mouce move", 
+            "Key enter"
+            ]
+        cmd_selected = tk.StringVar()
+        cmd_selected.set(cmd_list[0])
+        self.opt = tk.OptionMenu(self.root, cmd_selected, *cmd_list)
+        # 取得 cmd_selected.get()
+        # 時間セレクタ
+        self.spn_box = tk.Spinbox(self.root, from_=0, to=99, increment=1, width=10)
+        
 
         # 表示順序
         self.btn_sd.pack()
@@ -246,15 +260,14 @@ class Tk():
         self.txt_open.pack()
         self.check_1.pack()
         self.check_2.pack()
-        self.check_3.pack()
-        self.check_4.pack()
-        self.check_5.pack()
         self.btn_set.pack()
         self.btn_send_msg.pack()
         self.btn_read_msg.pack()
         self.btn_web.pack()
         self.btn_str.pack()
         self.btn_read_str.pack()
+        self.opt.pack()
+        self.spn_box.pack()
 
     def show(self):
         self.root.mainloop()
