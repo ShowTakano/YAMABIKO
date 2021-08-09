@@ -53,7 +53,7 @@ class SerialDevice():
 
 class Tk():
     def __init__(self):
-        # arduino
+        # serial
         self.mydevice = SerialDevice()
 
         # 画面初期化
@@ -86,7 +86,7 @@ class Tk():
             "Log-out":          "log-out", 
         }
 
-        # コマンド数　キータイプコマンド数
+        # コマンド数
         self.NUM_COMMAND = 10
 
         # コマンドリスト
@@ -106,8 +106,7 @@ class Tk():
 
 
     def _search_ports(self, event):
-        # search ports and reset optMenu list
-        # portを探索する。探索した結果をself.opt_menuに反映する。
+        # portを探索する。探索した結果をオプションメニューの選択肢に反映する。
         # https://stackoverflow.com/questions/17580218/changing-the-options-of-a-optionmenu-when-clicking-a-button
         ports = self.mydevice.get_list_ports()
         msg = ""
@@ -115,7 +114,7 @@ class Tk():
             self.ports.append(port)
             msg = msg + port + "\n"
         print(msg)
-        # refrech self.port_opt_menu
+        # Refrech self.port_opt_menu
         self.port_selected.set("")
         self.port_opt_menu["menu"].delete(0, "end")
         for port in self.ports:
@@ -184,7 +183,7 @@ class Tk():
 
 
     def _set_command(self):
-        # 実行コマンド選択オプションメニューをコマンド数分作成しself.cmdに登録する
+        # オプションメニューを作成しリストに登録する
         for _ in range(self.NUM_COMMAND):
             # 実行コマンドオプションメニュー
             cmd_selected = tk.StringVar()
@@ -210,7 +209,7 @@ class Tk():
             entry_type.insert(tk.END, "")
             # 取得 entry_type_var.get()
 
-            # 実行リストに登録
+            # リストに登録
             self.cmd_selected_list.append(cmd_selected)
             self.opt_list.append(opt)
             self.spn_selected_list.append(spn_selected)
@@ -223,7 +222,7 @@ class Tk():
 
     def page(self):
         tk.Label(self.root, text="Initialize").grid(row=0)
-        # デバイス探索用ボタン
+        # ポート探索用ボタン
         self.btn_sp = tk.Button(text="Search ports")
         self.btn_sp.bind(self.click, self._search_ports)
 
@@ -231,7 +230,7 @@ class Tk():
         self.btn_connect = tk.Button(text="Connect")
         self.btn_connect.bind(self.click, self._connect_device)
 
-        # ボタン表示
+        # イニシャライズのボタン表示
         self.btn_sp.grid(row=1, column=0)
         self.port_opt_menu.grid(row=1, column=1)
         self.btn_connect.grid(row=1, column=2)
@@ -240,7 +239,7 @@ class Tk():
         # 実行コマンド選択オプションメニュー作成
         self._set_command()
 
-        # 表示
+        # リストに登録されているインスタンスを表示
         tk.Label(self.root, text="Settings").grid(row=2)
         for i in range(self.NUM_COMMAND):
             self.opt_list[i].grid(row=3 + i, column=0)
@@ -249,12 +248,12 @@ class Tk():
             self.int_or_once_opt_list[i].grid(row=3 + i, column=3)
             self.entry_type_list_list[i].grid(row=3 + i, column=4)
 
-        # コマンド書き込みボタン
+        # 書き込みボタン
         self.btn_wc = tk.Button(text="Write")
         self.btn_wc.bind(self.click, self._write_command)
         self.btn_wc.grid(row=4 + self.NUM_COMMAND, columnspan=4)
 
-        # ウェブページを表示
+        # ウェブページ表示ボタン
         tk.Label(self.root, text="Web").grid(row=5 + self.NUM_COMMAND)
         self.btn_help = tk.Button(text="help")
         self.btn_help.bind(self.click, self._open_helppage)
