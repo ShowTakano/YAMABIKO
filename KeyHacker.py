@@ -151,18 +151,32 @@ class Tk():
                 if command == "Type":
                     _cmd = self.all_commands_dict[command]  # type
                     _str = self.entry_type_var_list[i].get()  # 入力されている文字列
+                    # Type 禁止文字チェック
                     if any(word in _str for word in [";", ":", ","]):
                         print("Do not use ;:,")
                         mb.showinfo("Type Error", "[Type] Do not use ; : ,")
-                        _str = ""
+                        _str = _str.replace(";", "").replace(":", "").replace(",", "")
+                    # Type 文字数上限チェック
                     if len(_str) > 64:
                         print("Maximun length is 64.")
                         mb.showinfo("Type Error", "[Type] Maximun length is 64.")
-                        _str = ""
+                        _str = _str[:64]
                     _cmd = _cmd + ":" + _str
                 else:
                     _cmd = self.all_commands_dict[command]
                 interval_sec = self.spn_selected_list[i].get()
+                # スピンボックス 誤入力チェック
+                try:
+                    _ = int(interval_sec)
+                except:
+                    print("sec must be numbers")
+                    mb.showinfo("sec Error", "[sec] (sec) must be numbers")
+                    interval_sec = "32400"
+                # スピンボックス 上限秒チェック
+                if int(interval_sec) > 32400:
+                    print("Maximun sec if 32400")
+                    mb.showinfo("sec Error", "[sec] Maximun (sec) is 32400.")
+                    interval_sec = "32400"
                 interval_or_once = self.int_or_once_selected_list[i].get()
                 cmd = _cmd + "," + interval_sec + "," + interval_or_once + ";"
                 cmds.append(cmd)
@@ -172,14 +186,17 @@ class Tk():
     def _write_command(self, event):
         # 現在のオプションメニュー選択状況をコマンドにセット
         cmds = self._get_selected_states()
-        # デバイスにメッセージを書き込み
-        for cmd in cmds:
-            self.mydevice.write_str(cmd)
+        try:
+            # デバイスにメッセージを書き込み
+            for cmd in cmds:
+                self.mydevice.write_str(cmd)
+                time.sleep(0.5)
+            # 書き込み終了メッセージ
+            self.mydevice.write_str("end;")
             time.sleep(0.5)
-        # 書き込み終了メッセージ
-        self.mydevice.write_str("end;")
-        time.sleep(0.5)
-        mb.showinfo("Success", "Writing successful !!")
+            mb.showinfo("Success", "Writing successful !!")
+        except:
+            mb.showinfo("Write Error", "Writing failed !! Device may not be connected.")
 
 
     def _set_command(self):
@@ -194,7 +211,7 @@ class Tk():
             # 実行時間スピンボックス
             spn_selected = tk.StringVar()
             spn_selected.set("0")  # self.spn_selectedは文字列型
-            spn_box = tk.Spinbox(self.root, textvariable=spn_selected, from_=0, to=99, increment=1, width=10)
+            spn_box = tk.Spinbox(self.root, textvariable=spn_selected, from_=0, to=32400, increment=1, width=10)
             # 取得 spn_selected.get()  # return str.
 
             # interval実行かonce実行かを選ぶオプションメニュー
