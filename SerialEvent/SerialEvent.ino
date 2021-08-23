@@ -1,5 +1,10 @@
-#include <EEPROM.h>
-// Uno,  Leonardo 1k=1024byte=1000文字
+// #include <EEPROM.h>  // Uno, Leonardo 1k=1024byte=1000文字
+#include <FlashAsEEPROM.h>  // EEPROMをエミュレート
+
+#include "Keyboard.h"
+
+#include <Adafruit_NeoPixel.h>
+
 
 const int Num_Cmd = 10;
 const int Max_Str_Len = 100;
@@ -8,25 +13,34 @@ long Event_IntervalSec[Num_Cmd] = {-1};
 long Event_MSecCounter[Num_Cmd] = {0}; // long整数型 -2,147,483,648から2,147,483,647までの数値
 String Event_Interval_Or_Once[Num_Cmd];
 boolean initialized = false;
-int index = 0;
+int global_index = 0;
 int msec = 0;
 int global_sec = 0;
 int _global_sec = 0;
+int LED_BUILTIN = 13;
+
+// // Create the neopixel strip with the built in definitions NUM_NEOPIXEL and PIN_NEOPIXEL
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_NEOPIXEL, PIN_NEOPIXEL, NEO_GRB + NEO_KHZ800);
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
-  Serial.begin(9600);
+  SERIAL_PORT_MONITOR.begin(9600);
+  strip.begin(); // start pixels
+  strip.setBrightness(20); // not too bright!
+  strip.show(); // Initialize all pixels to 'off'
   for (int index = 0; index < Num_Cmd; index++){
     initializeFromEEPROM(index * Max_Str_Len);
   }
+  Keyboard.begin();// initialize control over the keyboard:
 }
 
 void zeroPadToEEPROM(){
   for (int i = 0; i < Num_Cmd * Max_Str_Len; i++){
     String zero = "";
     byte len = zero.length();
-    EEPROM.put(i, 0);
+    EEPROM.write(i, 0);
   }
+  EEPROM.commit();
 }
 
 void writeStringToEEPROM(int addrOffset, const String &strToWrite)
@@ -38,6 +52,7 @@ void writeStringToEEPROM(int addrOffset, const String &strToWrite)
   {
     EEPROM.write(addrOffset + 1 + i, strToWrite[i]);
   }
+  EEPROM.commit();
 }
 
 String readStringFromEEPROM(int addrOffset)
@@ -55,27 +70,42 @@ String readStringFromEEPROM(int addrOffset)
 
 void initializeFromEEPROM(int addrOffset)
 {
-  int newStrLen = EEPROM.read(addrOffset);
-  if (0 < newStrLen){
-    // any data 工場出荷時EEPROMｈ-1もしくは、serialを受信したときに全箇所0にしている。commandを受信した箇所は文字数を入れている
-    char _data[newStrLen];
+  if (EEPROM.isValid()){  // 工場出荷時およびプログラム書き込み後初回は isValid 有効 ではないので、当処理は実行されない。一度書き込まれると次回通電時は実行される。
+    int newStrLen = EEPROM.read(addrOffset);
+    neo_color(255, 241, 0, 50);  // EEPROM黄色10*50=500msec
+    if (0 < newStrLen){
+      // any data serialを受信したときに全箇所0にしている。commandを受信した箇所は文字数を入れている
+      char _data[newStrLen];
 
-    for (int i = 0; i < newStrLen; i++)
-    {
-      _data[i] = EEPROM.read(addrOffset + 1 + i);
+      for (int i = 0; i < newStrLen; i++)
+      {
+        _data[i] = EEPROM.read(addrOffset + 1 + i);
+      }
+
+      String data = String(_data);
+      // initializeのためにdataをparse
+      String command;
+      int intervalsec;
+      String interval_or_once;
+      parseStringToInitialize(data, command, intervalsec, interval_or_once);
+      // initialize
+      int index = addrOffset / Max_Str_Len;
+      initialize(index, command, intervalsec, interval_or_once);
+      initialized = true;
     }
-
-    String data = String(_data);
-    // initializeのためにdataをparse
-    String command;
-    int intervalsec;
-    String interval_or_once;
-    parseStringToInitialize(data, command, intervalsec, interval_or_once);
-    // initialize
-    int index = addrOffset / Max_Str_Len;
-    initialize(index, command, intervalsec, interval_or_once);
-    initialized = true;
   }
+}
+
+int myatoi(char *str) {
+  // https://pknight.hatenablog.com/entry/20090629/1246254899
+    int num = 0;
+    while(*str != '\0'){
+        num += *str - 48;
+        num *= 10;
+        str++;
+    }
+    num /= 10;
+    return num;
 }
 
 void parseStringToInitialize(String data, String &command, int &intervalsec, String &interval_or_once){
@@ -97,7 +127,11 @@ void parseStringToInitialize(String data, String &command, int &intervalsec, Str
   }
   command = task;
   // sec, intervalをparse
-  intervalsec = cmds[1].toInt(); // 0~32400 sec
+  // intervalsec = cmds[1].toInt(); // 0~32400 sec
+  int str_len = cmds[1].length() + 1;
+  char charArray[str_len];
+  cmds[1].toCharArray(charArray, str_len);
+  intervalsec = myatoi(charArray);
   interval_or_once = cmds[2];
   int is_once;
   is_once = interval_or_once.indexOf("once"); // onceが含まれていれば0~。含まれてなければ-1。
@@ -120,9 +154,50 @@ void brink(){
   //delay(10);
 }
 
+// Input a value 0 to 255 to get a color value.
+// The colours are a transition r - g - b - back to r.
+uint32_t Wheel(byte WheelPos) {
+  if(WheelPos < 85) {
+   return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
+  } else if(WheelPos < 170) {
+   WheelPos -= 85;
+   return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3);
+  } else {
+   WheelPos -= 170;
+   return strip.Color(0, WheelPos * 3, 255 - WheelPos * 3);
+  }
+}
+
+void neo_rainbow(){
+  for(int j = 0; j < 250; j++) { // cycles of all colors on wheel 250*4=1000=1sec
+    for(int i = 0; i < strip.numPixels(); i++) {
+      strip.setPixelColor(i, Wheel(((i * 256 / strip.numPixels()) + j) & 255));
+      strip.show();
+      delay(1);
+    }
+  }
+  neo_off();
+}
+
+void neo_color(int r, int g, int b, int msec){
+  for(int i = 0; i < strip.numPixels(); i++) {
+    strip.setPixelColor(i, r, g, b);
+  }
+  strip.show();
+  delay(msec);
+  neo_off();
+}
+
+void neo_off(){
+  for(int k = 0; k < strip.numPixels(); k++) {
+    strip.setPixelColor(k, 0x0);
+  }
+  strip.show();
+}
+
 void myprint(String msg, String end_str){
-  Serial.print(msg);
-  Serial.print(end_str);
+  SERIAL_PORT_MONITOR.print(msg);
+  SERIAL_PORT_MONITOR.print(end_str);
 }
 
 int split(String data, char delimiter, String *dst){
@@ -158,9 +233,11 @@ void event(){
     if (Event_MSecCounter[idx] == Event_IntervalSec[idx] * 1000){
       // イベント発生時間
       // do 
-      brink();
-      Serial.print(readStringFromEEPROM(idx * Max_Str_Len));
-      Serial.print(";");
+      Keyboard.println("hello world!");
+      //brink();
+      neo_rainbow();
+      SERIAL_PORT_MONITOR.print(readStringFromEEPROM(idx * Max_Str_Len));
+      SERIAL_PORT_MONITOR.print(";");
       // イベントを行った後には時間カウンタをゼロに戻す
       Event_MSecCounter[idx] = 0;
       // 一度しか実行しないイベントは、インターバルを-1にする
@@ -171,25 +248,28 @@ void event(){
   }
 }
 
-
 void loop() {
   // inside of serial loop
-  if ( Serial.available() ){
+  if ( SERIAL_PORT_MONITOR.available() ){
+    neo_color(255, 0, 255, 500); // 受信マゼンタ500msec
 
     initialized = false;
     String data;
-    data = Serial.readStringUntil(';');
-    Serial.print("inputdata ");
-    Serial.print(data);
+    data = SERIAL_PORT_MONITOR.readStringUntil(';');
+    SERIAL_PORT_MONITOR.print("inputdata ");
+    SERIAL_PORT_MONITOR.print(data);
 
-    if (index == 0){
+    if (global_index == 0){
       // 受信して最初の一度目は、EEPROMを初期かする
       zeroPadToEEPROM();
+      for (int i=0; i < Num_Cmd; i++){  //  すでにセットされているコマンドも初期化する
+        initialize(i, "None", -1, "once");
+      }
     }
 
     if (data == "end"){
       // endに到達
-      index = 0;
+      global_index = 0;
       initialized = true;
     }
 
@@ -200,11 +280,11 @@ void loop() {
       String interval_or_once;
       parseStringToInitialize(data, command, intervalsec, interval_or_once);
       // initialize
-      initialize(index, command, intervalsec, interval_or_once);
+      initialize(global_index, command, intervalsec, interval_or_once);
       // EEPROMに登録
-      writeStringToEEPROM(index * Max_Str_Len, data);
+      writeStringToEEPROM(global_index * Max_Str_Len, data);
 
-      index = index + 1;
+      global_index = global_index + 1;
     }
   }
   // outside of serial loop
