@@ -2,9 +2,11 @@
 #include <FlashAsEEPROM.h>  // EEPROMをエミュレート
 
 #include "Keyboard.h"
+#include "Mouse.h"
 
 #include <Adafruit_NeoPixel.h>
 
+#define KEY_PRINTSCREEN 0xCE
 
 const int Num_Cmd = 10;
 const int Max_Str_Len = 100;
@@ -32,6 +34,22 @@ void setup() {
     initializeFromEEPROM(index * Max_Str_Len);
   }
   Keyboard.begin();// initialize control over the keyboard:
+  Mouse.begin();
+  mouseMoveStarShape();
+}
+
+void mouseMoveStarShape(){
+  // ここでマウスを星形に動かす
+  Mouse.move(20, 0, 0);
+  delay(200);
+  Mouse.move(0, 20, 0);
+  delay(200);
+  Mouse.move(-20, 0, 0);
+  delay(200);
+  Mouse.move(0, -20, 0);
+  delay(200);
+  Mouse.move(0, -20, 0);
+  delay(200);
 }
 
 void zeroPadToEEPROM(){
@@ -93,6 +111,9 @@ void initializeFromEEPROM(int addrOffset)
       initialize(index, command, intervalsec, interval_or_once);
       initialized = true;
     }
+  } else {
+    // 工場出荷時およびプログラム書き込み後初回である。
+    neo_color(30, 144, 255, 50);  // ブルー500msec
   }
 }
 
@@ -216,6 +237,158 @@ int split(String data, char delimiter, String *dst){
   return (index + 1);
 }
 
+void execute(String command){
+  // command実行
+  int duration = 100;
+  if (command == "mouse-left-click"){
+    // mouse-left-click
+    Mouse.click(MOUSE_LEFT);
+    delay(duration);
+  } else if (command == "mouse-right-click"){
+    // mouse-right-click
+    Mouse.click(MOUSE_RIGHT);
+    delay(duration);
+  } else if (command == "mouse-move"){
+    // mouse-move
+    Mouse.move(1, 0, 0); // 右へ1pix
+    delay(duration);
+    Mouse.move(-1, 0, 0); // 左へ1pix
+    delay(duration);
+  } else if (command == "key-up"){
+    // key-up
+    Keyboard.write(KEY_UP_ARROW);
+    delay(duration);
+  } else if (command == "key-down"){
+    // key-down
+    Keyboard.write(KEY_DOWN_ARROW);
+    delay(duration);
+  } else if (command == "key-left"){
+    // key-left
+    Keyboard.write(KEY_LEFT_ARROW);
+    delay(duration);
+  } else if (command == "key-right"){
+    // key-right
+    Keyboard.write(KEY_RIGHT_ARROW);
+    delay(duration);
+  } else if (command == "key-tab"){
+    // key-tab
+    Keyboard.write(KEY_TAB);
+    delay(duration);
+  } else if (command == "key-ecs"){
+    // key-ecs
+    Keyboard.write(KEY_ESC);
+    delay(duration);
+  } else if (command == "key-f2"){
+    // key-f2
+    Keyboard.write(KEY_F2);
+    delay(duration);
+  } else if (command == "key-f5"){
+    // key-f5
+    Keyboard.write(KEY_F5);
+    delay(duration);
+  } else if (command == "key-psc"){
+    // key-psc Win+PSc
+    Keyboard.press(KEY_LEFT_GUI);
+    delay(duration);
+    Keyboard.press(KEY_PRINTSCREEN);
+    delay(duration);
+    Keyboard.releaseAll();
+  } else if (command == "key-gui"){
+    // key-gui
+    Keyboard.write(KEY_LEFT_GUI);
+    delay(duration);
+  } else if (command == "key-enter"){
+    // key-enter
+    Keyboard.write(KEY_RETURN);
+    delay(duration);
+  } else if (command == "key-shift-keep"){
+    // key-shift-keep 押して離さない
+    Keyboard.press(KEY_LEFT_SHIFT);
+    delay(duration);
+  } else if (command == "key-ctrl-keep"){
+    // key-ctrl-keep 押して離さない
+    Keyboard.press(KEY_LEFT_CTRL);
+    delay(duration);
+  } else if (command == "key-alt-keep"){
+    // key-alt-keep 押して離さない
+    Keyboard.press(KEY_LEFT_ALT);
+    delay(duration);
+  } else if (command == "key-del-keep"){
+    // key-del-keep 押して離さない
+    Keyboard.press(KEY_DELETE);
+    delay(duration);
+  } else if (command == "key-gui-keep"){
+    // key-gui-keep 押して離さない
+    Keyboard.press(KEY_LEFT_GUI);
+    delay(duration);
+  } else if (command == "key-release"){
+    // key-release
+    Keyboard.releaseAll();
+    delay(duration);
+  } else if (command == "terminal-win"){
+    // terminal-win (KEY_LEFT_GUI cmd enter)
+    Keyboard.write(KEY_LEFT_GUI);
+    delay(duration);
+    Keyboard.print("cmd");
+    delay(duration);
+    Keyboard.write(KEY_RETURN);
+    delay(duration);
+  } else if (command == "terminal-osx"){
+    // terminal-osx (KEY_LEFT_GUI-N)
+    Keyboard.press(KEY_LEFT_GUI);
+    delay(duration);
+    Keyboard.press('N');
+    delay(duration);
+    Keyboard.releaseAll();
+  } else if (command == "terminal-linux"){
+    // terminal-linux (ctrl-alt-t)
+    Keyboard.press(KEY_LEFT_CTRL);
+    delay(duration);
+    Keyboard.press(KEY_LEFT_ALT);
+    delay(duration);
+    Keyboard.press('t');
+    delay(duration);
+    Keyboard.releaseAll();
+  } else if (command == "log-out-win"){
+    // log-out-win
+    Keyboard.press(KEY_LEFT_CTRL);
+    Keyboard.press(KEY_LEFT_ALT);
+    Keyboard.press(KEY_DELETE);
+    delay(duration);
+    Keyboard.releaseAll();
+    delay(2000);
+    Keyboard.write(KEY_DOWN_ARROW);
+    delay(duration);
+    Keyboard.write(KEY_DOWN_ARROW);
+    delay(duration);
+    Keyboard.write(KEY_RETURN);
+    delay(duration);
+  } else if (command == "log-out-osx"){
+    // log-out-osx
+    Keyboard.press(KEY_LEFT_GUI);
+    Keyboard.press(KEY_LEFT_SHIFT);
+    Keyboard.press('Q');
+    delay(duration);
+    Keyboard.releaseAll();
+    Keyboard.write(KEY_RETURN);
+  } else if (command == "log-out-linux"){
+    // log-out-linux
+    Keyboard.press(KEY_LEFT_CTRL);
+    Keyboard.press(KEY_LEFT_ALT);
+    Keyboard.press(KEY_DELETE);
+    delay(1000);
+    Keyboard.releaseAll();
+    Keyboard.write(KEY_RETURN);
+  } else {
+    // 最後は、typeコマンドであり、入力する文字列が直接入っている場合
+    int cmd_len = command.length() + 1;
+    char charCommand[cmd_len];
+    command.toCharArray(charCommand, cmd_len);
+    Keyboard.print(charCommand);
+    delay(duration);
+  }
+}
+
 
 void initialize(int index, String command, int intervalsec, String interval_or_once){
   Event_Command[index] = command;
@@ -233,7 +406,7 @@ void event(){
     if (Event_MSecCounter[idx] == Event_IntervalSec[idx] * 1000){
       // イベント発生時間
       // do 
-      Keyboard.println("hello world!");
+      execute(Event_Command[idx]);
       //brink();
       neo_rainbow();
       SERIAL_PORT_MONITOR.print(readStringFromEEPROM(idx * Max_Str_Len));
