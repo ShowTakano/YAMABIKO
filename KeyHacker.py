@@ -74,16 +74,36 @@ class Tk():
 
         # コマンド一覧　オプションメニュー選択文字 : 送信文字
         self.all_commands_dict = {
-            "None":             "None", 
-            "Mouse click":      "mouse-click", 
-            "Mouse move":       "mouse-move", 
-            "Key down":         "key-down", 
-            "Key up":           "key-up", 
-            "Key Windows":      "key-win", 
-            "Key enter":        "key-enter", 
-            "Type":             "type", 
-            "Command-prompt":   "cmd",  # cmd,3,once;  (win cmd enter)
-            "Log-out":          "log-out", 
+            "None":                         "None", 
+            "Mouse left-click":             "mouse-left-click", 
+            "Mouse right-click":            "mouse-right-click", 
+            "Mouse move":                   "mouse-move", 
+            "Key up":                       "key-up",  # KEY_UP_ARROW
+            "Key down":                     "key-down",  # KEY_DOWN_ARROW
+            "Key left":                     "key-left",  # KEY_LEFT_ARROW
+            "Key right":                    "key-right",  # KEY_RIGHT_ARROW
+            "Key Tab":                      "key-tab",  # KEY_TAB
+            "Key Esc":                      "key-ecs",  # KEY_ESC
+            "Key F2":                       "key-f2",  # KEY_F2
+            "Key F5":                       "key-f5",  # KEY_F5
+            "Key PrintScreen":              "key-psc",  # #define KEY_PRINTSCREEN 0xCE 「printscreen」で検索し、「PrintScreenキーを使用して画面の領域の切り取りを起動する」から、「プリントスクリーンのショートカット」の「PrtScnボタンを使用して画面領域切り取りを開く」をオンに。「ピクチャ」の「スクリーンショット」に画像が保存される
+            "Key Windows":                  "key-gui",  # KEY_LEFT_GUI
+            "Key command (OSX)":            "key-gui",  # KEY_LEFT_GUI
+            "Key command (Linux)":          "key-gui",  # KEY_LEFT_GUI
+            "Key Enter":                    "key-enter",  # KEY_RETURN
+            "Key Shift (keep)":             "key-shift-keep",  # KEY_LEFT_SHIFT
+            "Key Ctrl (keep)":              "key-ctrl-keep",  # KEY_LEFT_CTRL
+            "Key Alt (keep)":               "key-alt-keep",  # KEY_LEFT_ALT
+            "Key Del (keep)":               "key-del-keep",  # KEY_DELETE
+            "Key command (OSX) (keep)":     "key-gui-keep",  # KEY_LEFT_GUI
+            "Key release-all":              "key-release",
+            "Type":                         "type",
+            "Command-prompt(Win)":          "terminal-win",  # (KEY_LEFT_GUI cmd enter)
+            "Terminal(OSX)":                "terminal-osx",  # (KEY_LEFT_GUI-N)
+            "Terminal(Linux)":              "terminal-linux",  # (ctrl-alt-t)
+            "Log-out(Win)":                 "log-out-win",  # (ctrl-alt-del down down enter)
+            "Log-out(OSX)":                 "log-out-osx",  # (KEY_LEFT_GUI-Shift-Q enter)
+            "Log-out(Linux)":               "log-out-linux",  # (ctrl-alt-del enter)
         }
 
         # コマンド数
@@ -199,6 +219,16 @@ class Tk():
             mb.showinfo("Write Error", "Writing failed !! Device may not be connected.")
 
 
+    def _stop_command(self, event):
+        try:
+            # 書き込み終了メッセージだけを送ることで、デバイス側のコマンドがすべてクリアされ、stop状態になる
+            self.mydevice.write_str("end;")
+            time.sleep(0.5)
+            mb.showinfo("Success", "Stopping !!")
+        except:
+            mb.showinfo("Write Error", "Writing failed !! Device may not be connected.")
+
+
     def _set_command(self):
         # オプションメニューを作成しリストに登録する
         for _ in range(self.NUM_COMMAND):
@@ -268,10 +298,24 @@ class Tk():
         # 書き込みボタン
         self.btn_wc = tk.Button(text="Write")
         self.btn_wc.bind(self.click, self._write_command)
-        self.btn_wc.grid(row=4 + self.NUM_COMMAND, columnspan=4)
+        self.btn_wc.grid(row=4 + self.NUM_COMMAND, columnspan=2, column=0)
+        
+        # ストップボタン
+        self.btn_st = tk.Button(text="Stop")
+        self.btn_st.bind(self.click, self._stop_command)
+        self.btn_st.grid(row=4 + self.NUM_COMMAND, columnspan=2, column=1)
 
         # ウェブページ表示ボタン
         tk.Label(self.root, text="Web").grid(row=5 + self.NUM_COMMAND)
+        # サンプルレシピボタン
+        # スクリーンセーバーやログアウトを防ぐ
+        # F5再読み込みマウスクリック
+        # ログオフ
+        # 電源切る
+        # 上を押し続けてパスワードエンターでログイン
+        # マウスクリックして画面スクショ保存
+        # メール送信ボタン押す
+        # メモを記入して名前を付けて保存
         self.btn_help = tk.Button(text="help")
         self.btn_help.bind(self.click, self._open_helppage)
         self.btn_ad = tk.Button(text="AD")
