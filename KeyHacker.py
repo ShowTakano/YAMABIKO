@@ -8,6 +8,12 @@ from serial.tools import list_ports
 
 import webbrowser
 
+from icons.icon import GuiIcon
+
+"""
+pyinstaller               4.5.1
+pyinstaller KeyHacker.py --onefile --noconsole --icon=icons/ico.ico
+"""
 
 class SerialDevice():
     def __init__(self):
@@ -60,6 +66,11 @@ class Tk():
         self.root = tk.Tk()
         self.root.title("KeyHacker")
         self.root.geometry("640x480")
+        
+        # icon画像
+        guiicon = GuiIcon()
+        self.img = tk.PhotoImage(data=guiicon.data)
+        self.root.tk.call('wm', 'iconphoto', self.root._w, self.img)
 
         self.click = "<Button-1>"
 
@@ -309,6 +320,10 @@ class Tk():
         tk.Label(self.root, text="Web").grid(row=5 + self.NUM_COMMAND)
         # サンプルレシピボタン
         # スクリーンセーバーやログアウトを防ぐ
+        # ログインを打つのが面倒
+        # ログアウトされて保存していなかったファイルが失われる
+        # 長時間のダウンロードが、止まってしまう
+        # リモートデスクトップ接続が切れる
         # F5再読み込みマウスクリック
         # ログオフ
         # 電源切る
