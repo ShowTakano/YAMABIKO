@@ -39,16 +39,17 @@ void setup() {
 }
 
 void mouseMoveStarShape(){
-  // ここでマウスを星形に動かす
-  Mouse.move(20, 0, 0);
+  // マウスを星形に動かす
+  int radius = 10;
+  Mouse.move(1 * radius, 2 * radius, 0);
   delay(200);
-  Mouse.move(0, 20, 0);
+  Mouse.move(-2 * radius, -1 * radius, 0);
   delay(200);
-  Mouse.move(-20, 0, 0);
+  Mouse.move(2 * radius, 0, 0);
   delay(200);
-  Mouse.move(0, -20, 0);
+  Mouse.move(-2 * radius, 1 * radius, 0);
   delay(200);
-  Mouse.move(0, -20, 0);
+  Mouse.move(1 * radius, -2 * radius, 0);
   delay(200);
 }
 
