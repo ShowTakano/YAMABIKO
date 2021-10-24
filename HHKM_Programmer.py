@@ -12,7 +12,7 @@ from icons.icon import GuiIcon
 
 """
 pyinstaller               4.5.1
-pyinstaller KeyHacker.py --onefile --noconsole --icon=icons/ico.ico
+pyinstaller HHKM_Programmer.py --onefile --noconsole --icon=icons/ico.ico
 """
 
 class SerialDevice():
@@ -64,7 +64,7 @@ class Tk():
 
         # 画面初期化
         self.root = tk.Tk()
-        self.root.title("KeyHacker")
+        self.root.title("HHKM Programmer")
         self.root.geometry("640x480")
         
         # icon画像
