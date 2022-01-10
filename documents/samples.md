@@ -6,25 +6,25 @@
  * 長時間のダウンロードが、止まってしまうことを防ぐ。
  * リモートデスクトップ接続が切れることを防ぐ。
 
-![画像](images\sample_1_mouse_move.PNG)
+![画像](images/sample_1_mouse_move.PNG)
 
  ## 1時間後にマウスクリック
  * メール送信ボタンを押す。
  * 応募ボタンを押す。
  
- ![画像](images\sample_2_mouse_click.PNG)
+ ![画像](images/sample_2_mouse_click.PNG)
  ## 15秒ごとにF5を押し、ウェブサイトを再読み込み
- ![画像](images\sample_3_F5.PNG)
+ ![画像](images/sample_3_F5.PNG)
  ## 2時間後にログアウト
- ![画像](images\sample_4_logout.PNG)
+ ![画像](images/sample_4_logout.PNG)
  ## 8時間後に(上を数回押し)ログインパスワードを入力してエンターでログイン
- ![画像](images\sample_5_login.PNG)
+ ![画像](images/sample_5_login.PNG)
  ## 30分後に画面のスクリーンショットを保存
- ![画像](images\sample_6_screenshot.PNG)
+ ![画像](images/sample_6_screenshot.PNG)
  ## メモを記入して名前を付けて保存
- ![画像](images\sample_7_memo.PNG)
+ ![画像](images/sample_7_memo.PNG)
  ## 4時間後にコマンドプロンプトを起動してPCの電源を切る
- ![画像](images\sample_8_shutdown.PNG)
+ ![画像](images/sample_8_shutdown.PNG)
 
  # コマンド一覧
 |command|動作|
