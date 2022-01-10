@@ -10,6 +10,8 @@ import webbrowser
 
 from icons.icon import GuiIcon
 
+VERSION = "v1.0.0"
+
 """
 pyinstaller               4.5.1
 pyinstaller HHKM_Programmer.py --onefile --noconsole --icon=icons/ico.ico
@@ -50,7 +52,7 @@ class SerialDevice():
         self.serial.timeout = self.timeout
         self.serial.port = self.port
         self.serial.open()
-        print("successsly opend your device.")
+        print("Successfully opened device.")
 
     def write_str(self, str):
         print("write_str", str)
@@ -64,7 +66,7 @@ class Tk():
 
         # 画面初期化
         self.root = tk.Tk()
-        self.root.title("HHKM Programmer")
+        self.root.title("HHKM Programmer " + VERSION)
         self.root.geometry("640x480")
         
         # icon画像
@@ -164,6 +166,9 @@ class Tk():
         except:
             self.txt_open.insert(tk.END, "Open failed")
 
+    def _open_samplepage(self, event):
+        # サンプルページを表示
+        webbrowser.open("https://www.makuake.com/project/narrativelab")
 
     def _open_helppage(self, event):
         # ヘルプページを表示
@@ -205,7 +210,7 @@ class Tk():
                     interval_sec = "32400"
                 # スピンボックス 上限秒チェック
                 if int(interval_sec) > 32400:
-                    print("Maximun sec if 32400")
+                    print("Maximun sec is 32400")
                     mb.showinfo("sec Error", "[sec] Maximun (sec) is 32400.")
                     interval_sec = "32400"
                 interval_or_once = self.int_or_once_selected_list[i].get()
@@ -225,9 +230,9 @@ class Tk():
             # 書き込み終了メッセージ
             self.mydevice.write_str("end;")
             time.sleep(0.5)
-            mb.showinfo("Success", "Writing successful !!")
+            mb.showinfo("Success", "Write successful !!")
         except:
-            mb.showinfo("Write Error", "Writing failed !! Device may not be connected.")
+            mb.showinfo("Write Error", "Write failed !! Device may not be connected.")
 
 
     def _stop_command(self, event):
@@ -237,7 +242,7 @@ class Tk():
             time.sleep(0.5)
             mb.showinfo("Success", "Stopping !!")
         except:
-            mb.showinfo("Write Error", "Writing failed !! Device may not be connected.")
+            mb.showinfo("Write Error", "Write failed !! Device may not be connected.")
 
 
     def _set_command(self):
@@ -319,24 +324,15 @@ class Tk():
         # ウェブページ表示ボタン
         tk.Label(self.root, text="Web").grid(row=5 + self.NUM_COMMAND)
         # サンプルレシピボタン
-        # スクリーンセーバーやログアウトを防ぐ
-        # ログインを打つのが面倒
-        # ログアウトされて保存していなかったファイルが失われる
-        # 長時間のダウンロードが、止まってしまう
-        # リモートデスクトップ接続が切れる
-        # F5再読み込みマウスクリック
-        # ログオフ
-        # 電源切る
-        # 上を押し続けてパスワードエンターでログイン
-        # マウスクリックして画面スクショ保存
-        # メール送信ボタン押す
-        # メモを記入して名前を付けて保存
+        self.btn_sample = tk.Button(text="samples")
+        self.btn_sample.bind(self.click, self._open_samplepage)
         self.btn_help = tk.Button(text="help")
         self.btn_help.bind(self.click, self._open_helppage)
         self.btn_ad = tk.Button(text="AD")
         self.btn_ad.bind(self.click, self._open_adpage)
-        self.btn_help.grid(row=6 + self.NUM_COMMAND, column=0, columnspan=5)
-        self.btn_ad.grid(row=6 + self.NUM_COMMAND, column=1, columnspan=5)
+        self.btn_sample.grid(row=6 + self.NUM_COMMAND, column=0)
+        self.btn_help.grid(row=6 + self.NUM_COMMAND, column=1)
+        self.btn_ad.grid(row=6 + self.NUM_COMMAND, column=2)
 
 
     def show(self):
