@@ -10,7 +10,7 @@ import webbrowser
 
 from icons.icon import GuiIcon
 
-VERSION = "v1.0.0"
+VERSION = "v1.0.1"
 
 """
 pyinstaller               4.5.1
@@ -168,15 +168,15 @@ class Tk():
 
     def _open_samplepage(self, event):
         # サンプルページを表示
-        webbrowser.open("https://www.makuake.com/project/narrativelab")
+        webbrowser.open("https://github.com/ShowTakano/HHKM_Programmer/blob/master/documents/samples.md")
 
     def _open_helppage(self, event):
         # ヘルプページを表示
-        webbrowser.open("https://www.makuake.com/project/narrativelab")
+        webbrowser.open("https://github.com/ShowTakano/HHKM_Programmer/blob/master/documents/help.md")
 
     def _open_adpage(self, event):
-        # 広告ページを表示
-        webbrowser.open("https://www.makuake.com/project/narrativelab")
+        # 商品ページを表示
+        webbrowser.open("https://www.makuake.com/project/narrativelab_hhkm/")
 
 
     def _get_selected_states(self):
@@ -328,7 +328,7 @@ class Tk():
         self.btn_sample.bind(self.click, self._open_samplepage)
         self.btn_help = tk.Button(text="help")
         self.btn_help.bind(self.click, self._open_helppage)
-        self.btn_ad = tk.Button(text="AD")
+        self.btn_ad = tk.Button(text="manual")
         self.btn_ad.bind(self.click, self._open_adpage)
         self.btn_sample.grid(row=6 + self.NUM_COMMAND, column=0)
         self.btn_help.grid(row=6 + self.NUM_COMMAND, column=1)
