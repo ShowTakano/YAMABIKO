@@ -69,7 +69,7 @@ class Tk():
         self.root.title("HHKM Programmer " + VERSION)
         self.root.geometry("640x480")
         
-        # icon画像
+        # icon画像 macOSでは使用不可
         guiicon = GuiIcon()
         self.img = tk.PhotoImage(data=guiicon.data)
         self.root.tk.call('wm', 'iconphoto', self.root._w, self.img)
@@ -101,21 +101,21 @@ class Tk():
             "Key F5":                       "key-f5",  # KEY_F5
             "Key PrintScreen":              "key-psc",  # #define KEY_PRINTSCREEN 0xCE 「printscreen」で検索し、「PrintScreenキーを使用して画面の領域の切り取りを起動する」から、「プリントスクリーンのショートカット」の「PrtScnボタンを使用して画面領域切り取りを開く」をオンに。「ピクチャ」の「スクリーンショット」に画像が保存される
             "Key Windows":                  "key-gui",  # KEY_LEFT_GUI
-            "Key command (OSX)":            "key-gui",  # KEY_LEFT_GUI
+            # "Key command (macOS)":        "key-gui",  # KEY_LEFT_GUI  # OKだが単体で押しても意味がない
             "Key command (Linux)":          "key-gui",  # KEY_LEFT_GUI
             "Key Enter":                    "key-enter",  # KEY_RETURN
             "Key Shift (keep)":             "key-shift-keep",  # KEY_LEFT_SHIFT
             "Key Ctrl (keep)":              "key-ctrl-keep",  # KEY_LEFT_CTRL
             "Key Alt (keep)":               "key-alt-keep",  # KEY_LEFT_ALT
             "Key Del (keep)":               "key-del-keep",  # KEY_DELETE
-            "Key command (OSX) (keep)":     "key-gui-keep",  # KEY_LEFT_GUI
+            "Key command (macOS) (keep)":   "key-gui-keep",  # KEY_LEFT_GUI
             "Key release-all":              "key-release",
             "Type":                         "type",
             "Command-prompt(Win)":          "terminal-win",  # (KEY_LEFT_GUI cmd enter)
-            "Terminal(OSX)":                "terminal-osx",  # (KEY_LEFT_GUI-N)
+            # "Terminal(macOS)":            "terminal-osx",  # (KEY_LEFT_GUI-N)  # 新規フォルダ作成コマンド
             "Terminal(Linux)":              "terminal-linux",  # (ctrl-alt-t)
             "Log-out(Win)":                 "log-out-win",  # (ctrl-alt-del down down enter)
-            "Log-out(OSX)":                 "log-out-osx",  # (KEY_LEFT_GUI-Shift-Q enter)
+            "Log-out(macOS)":               "log-out-osx",  # (KEY_LEFT_GUI-Shift-Q enter)
             "Log-out(Linux)":               "log-out-linux",  # (ctrl-alt-del enter)
         }
 
