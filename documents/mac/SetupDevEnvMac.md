@@ -116,6 +116,15 @@ https://shinshin86.hateblo.jp/entry/2022/01/08/070847
 https://zenn.dev/kenghaya/articles/9f07914156fab5
 https://qiita.com/Yiwen/items/715e4319bb14d52e3b8e
 
+## macOSバージョン注意
+* macOS Catalina バージョン 10.15.7
+  * pyinstallerが成功する。
+  * しかしアイコンが表示されない。
+* macOS Monterey バージョン 12.2.1
+  * Catalinaでビルドした.appが起動成功する。
+  * Catalinaではアイコンが表示されなかったが、Montereyではアイコンが表示される。
+  * 【注意】pyinstallerが実行できない。どうやらOSが新しすぎて、pyinstallerが対応していないようだ。
+
 ## リリース
 * 右クリックからzip圧縮
 * githubのリリースページに添付
