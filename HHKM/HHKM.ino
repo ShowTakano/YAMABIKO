@@ -253,9 +253,9 @@ void execute(String command){
     delay(duration);
   } else if (command == "mouse-move"){
     // mouse-move
-    Mouse.move(1, 0, 0); // 右へ1pix
+    Mouse.move(10, 0, 0); // 右へ10pix
     delay(duration);
-    Mouse.move(-1, 0, 0); // 左へ1pix
+    Mouse.move(-10, 0, 0); // 左へ10pix
     delay(duration);
   } else if (command == "key-up"){
     // key-up
